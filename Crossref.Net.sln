@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crossref.Net", "Crossref.Net\Crossref.Net.csproj", "{DAF73421-2CB2-4F31-9EAB-DD48C2441A53}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crossref.Tests", "Crossref.Tests\Crossref.Tests.csproj", "{A9997D05-0D5F-4A78-A52A-1A82753FA621}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crossref.Example", "Crossref.Example\Crossref.Example.csproj", "{6778C57C-5BA4-47BE-8B4F-547BE0388905}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DAF73421-2CB2-4F31-9EAB-DD48C2441A53}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DAF73421-2CB2-4F31-9EAB-DD48C2441A53}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DAF73421-2CB2-4F31-9EAB-DD48C2441A53}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DAF73421-2CB2-4F31-9EAB-DD48C2441A53}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A9997D05-0D5F-4A78-A52A-1A82753FA621}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A9997D05-0D5F-4A78-A52A-1A82753FA621}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A9997D05-0D5F-4A78-A52A-1A82753FA621}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A9997D05-0D5F-4A78-A52A-1A82753FA621}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6778C57C-5BA4-47BE-8B4F-547BE0388905}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6778C57C-5BA4-47BE-8B4F-547BE0388905}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6778C57C-5BA4-47BE-8B4F-547BE0388905}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6778C57C-5BA4-47BE-8B4F-547BE0388905}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
