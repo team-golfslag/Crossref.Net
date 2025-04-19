@@ -8,31 +8,49 @@ using System.Net.Http.Json;
 using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Crossref.Net.Exceptions;
 using Crossref.Net.Models;
 using Crossref.Net.Services;
 using DoiTools.Net;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Moq;
 using Moq.Protected;
 
-namespace Crossref.Net.Tests;
+namespace Crossref.Tests;
 
-public class CrossrefServiceTests : IDisposable
+public class CrossrefServiceTests
 {
     private readonly CrossrefService _crossrefService;
-    private readonly HttpClient _httpClient;
     private readonly Mock<HttpMessageHandler> _httpMessageHandlerMock;
-    private readonly Mock<ILogger<CrossrefService>> _loggerMock;
 
     public CrossrefServiceTests()
     {
         _httpMessageHandlerMock = new();
-        _httpClient = new(_httpMessageHandlerMock.Object);
-        _loggerMock = new();
-        _crossrefService = new(_httpClient, _loggerMock.Object);
-    }
+        Mock<IOptions<CrossrefServiceOptions>> optionsMock = new();
+        optionsMock.Setup(o => o.Value).Returns(new CrossrefServiceOptions
+        {
+            BaseUrl = "https://api.crossref.org",
+            Mailto = "mailto:crossref@crossref.net",
+            UserAgent = "Crossref.Net",
+            JsonSerializerOptions = new()
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower,
+                Converters = { new JsonStringEnumConverter(JsonNamingPolicy.SnakeCaseLower), new DoiConverter() },
+            },
+        });
 
-    public void Dispose() => _crossrefService.Dispose();
+        HttpClient httpClient = new(_httpMessageHandlerMock.Object)
+        {
+            BaseAddress = new("https://api.crossref.org")
+        };
+        Mock<ILogger<CrossrefService>> loggerMock = new();
+        _crossrefService = new(
+            httpClient,
+            optionsMock.Object,
+            loggerMock.Object
+        );
+    }
 
     [Fact]
     public async Task GetWork_ShouldReturnWork_WhenResponseIsValid()
@@ -71,7 +89,7 @@ public class CrossrefServiceTests : IDisposable
             });
 
         // Act
-        Work? result = await _crossrefService.GetWork(doi);
+        Work? result = await _crossrefService.GetWorkAsync(doi);
 
         // Assert
         Assert.NotNull(result);
@@ -92,7 +110,7 @@ public class CrossrefServiceTests : IDisposable
             .ThrowsAsync(new HttpRequestException("Request failed"));
 
         // Act
-        await Assert.ThrowsAsync<HttpRequestException>(async () => await _crossrefService.GetWork(doi));
+        await Assert.ThrowsAsync<HttpRequestException>(async () => await _crossrefService.GetWorkAsync(doi));
     }
 
     [Fact]
@@ -112,7 +130,7 @@ public class CrossrefServiceTests : IDisposable
             });
 
         // Act
-        await Assert.ThrowsAsync<JsonException>(async () => await _crossrefService.GetWork(doi));
+        await Assert.ThrowsAsync<CrossrefException>(async () => await _crossrefService.GetWorkAsync(doi));
     }
 
     [Fact]
@@ -163,7 +181,7 @@ public class CrossrefServiceTests : IDisposable
             });
 
         // Act
-        var result = await _crossrefService.GetWorks(query);
+        var result = await _crossrefService.GetWorksAsync(query);
 
         // Assert
         Assert.NotNull(result);
@@ -178,7 +196,7 @@ public class CrossrefServiceTests : IDisposable
     public async Task GetJournal_ShouldReturnJournal_WhenResponseIsValid()
     {
         // Arrange
-        string issn = "1234-5678";
+        const string issn = "1234-5678";
         Journal journal = new()
         {
             ISSN = ["1234-5678"],
@@ -211,7 +229,7 @@ public class CrossrefServiceTests : IDisposable
             });
 
         // Act
-        Journal? result = await _crossrefService.GetJournal(issn);
+        Journal? result = await _crossrefService.GetJournalAsync(issn);
 
         // Assert
         Assert.NotNull(result);
@@ -223,7 +241,7 @@ public class CrossrefServiceTests : IDisposable
     public async Task GetJournals_ShouldReturnJournals_WhenResponseIsValid()
     {
         // Arrange
-        string query = "test";
+        const string query = "test";
         var journals = new List<Journal>
         {
             new()
@@ -276,7 +294,7 @@ public class CrossrefServiceTests : IDisposable
             });
 
         // Act
-        var result = await _crossrefService.GetJournals(query);
+        var result = await _crossrefService.GetJournalsAsync(query);
 
         // Assert
         Assert.NotNull(result);
@@ -304,7 +322,7 @@ public class CrossrefServiceTests : IDisposable
         // Act
         _crossrefService.GetType()
             .GetMethod("ProcessResponse", BindingFlags.NonPublic | BindingFlags.Instance)
-            ?.Invoke(_crossrefService, new object[] { response });
+            ?.Invoke(_crossrefService, [response]);
 
         // Assert
         Assert.Equal(5,
