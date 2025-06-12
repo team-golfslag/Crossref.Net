@@ -7,22 +7,28 @@ using Crossref.Net.Models;
 using Crossref.Net.Services;
 using DoiTools.Net;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
-Doi doi = Doi.Parse("10.1016/j.chroma.2008.01.017");
-CrossrefService crossrefService = new(new(), new Logger<CrossrefService>(new LoggerFactory()));
+var options = Options.Create(new CrossrefServiceOptions
+{
+    BaseUrl = "https://api.crossref.org",
+    UserAgent = "Crossref.Net/1.0",
+});
+CrossrefService crossrefService = new(new(), options, new Logger<CrossrefService>(new LoggerFactory()));
+
+// Doi doi = Doi.Parse("10.1016/j.chroma.2008.01.017");
+// Work? work = await crossrefService.GetWorkAsync(doi);
+// Console.WriteLine(work?.Title?.FirstOrDefault());
 //
-// Work? work = await crossrefService.GetWork(doi);
-// Console.WriteLine(work?.Title.FirstOrDefault());
-//
-// List<Work> works = await crossrefService.GetWorks("chromatography");
+// List<Work> works = await crossrefService.GetWorksAsync("chromatography");
 // foreach (Work w in works)
 // {
-//     Console.WriteLine(w.Title.FirstOrDefault());
+//     Console.WriteLine(w.Title?.FirstOrDefault());
 // }
 
-string issn = "0360-4012";
-Journal? journal = await crossrefService.GetJournal(issn);
+const string issn = "0360-4012";
+Journal? journal = await crossrefService.GetJournalAsync(issn);
 Console.WriteLine(journal?.Title);
 
-var journals = await crossrefService.GetJournals("biology");
+var journals = await crossrefService.GetJournalsAsync("biology");
 foreach (Journal j in journals) Console.WriteLine(j.Title);
